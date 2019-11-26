@@ -3,13 +3,16 @@ DATE_SUF = $(shell date +%Y.%m.%d.%H.%M.%S)
 
 # GIT_OPT := --depth=1
 
+REPO_LIST_DIR := ../../conf/git.repos.d
+REPO_SRC_DIR := ../../src/repo
+
 
 # ###########################
 # MAIN AREA
 # ###########################
 .PHONY: init fini clean install uninstall sync export
 init:
-	$(call fetchRepoListH,gitee.lst,.,git@gitee.com:)
+	$(call fetchRepoListR,gitee,$(REPO_SRC_DIR),git@gitee.com:)
 	@echo ALL DONE;
 fini:
 	echo "$@ - PASS"
@@ -41,8 +44,9 @@ define verifyLink
 	[ ! -h $(2) ] && $(3) ln -s $(1) $(2) || >/dev/null
 endef
 
-define fetchRepoListH
-	for x in $(shell cat $(1) | grep -v '#'); do \
+define fetchRepoListR
+	# echo `cat $(REPO_LIST_DIR)/$(1).d/*.lst`
+	for x in $(shell cat $(REPO_LIST_DIR)/$(1).d/*.lst | grep -v '#' | sort); do \
 		echo $$x; \
 		fname=$$(echo $$x | tr '/.' '-' | tr A-Z a-z); \
 		dest_dir=$(2)/$$fname; \
