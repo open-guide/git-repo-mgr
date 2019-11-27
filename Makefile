@@ -32,6 +32,8 @@ uninstall:
 sync:
 	-find $(REPO_SRC_DIR) -type d -name ".git" | xargs -t -n1 -I _ git -C _/.. pull
 	echo sync done.
+merge:
+	$(call mergeRepoWithBuddyR)
 export:
 	@echo TODO-RESERVED
 
@@ -91,5 +93,13 @@ define initWorkDirR
 		[ -d "$(LOG_DIR)/$$x" ] || mkdir -p $(LOG_DIR)/$$x; \
 		[ -L "$(DOCKER_APP_DIR)/$$x/log" ] || ln -fs ../../../log/$$x "$(DOCKER_APP_DIR)/$$x/log"; \
 		[ -L "$(K8S_APP_DIR)/$$x/log" ] || ln -fs ../../../log/$$x "$(K8S_APP_DIR)/$$x/log"; \
+	done;
+endef
+
+# 合并代码buddy -> repo
+define mergeRepoWithBuddyR
+	names=`find $(BUDDY_SRC_DIR) -maxdepth 1 -type d -exec basename {} \;`; \
+	for x in $$names; do \
+		rsync -avP $(BUDDY_SRC_DIR)/$$x/ $(REPO_SRC_DIR)/$$x/; \
 	done;
 endef
