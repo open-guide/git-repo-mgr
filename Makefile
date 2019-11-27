@@ -58,7 +58,7 @@ endef
 define fetchRepoListR
 	# 拉取列表
 	# echo "cat $(REPO_LIST_DIR)/$(1).d/*.lst"
-	for x in $(shell cat $(REPO_LIST_DIR)/$(1).d/*.lst | grep -v '#' | sort); do \
+	for x in $(shell find $(REPO_LIST_DIR)/$(1).d -name "*.lst" | xargs cat | grep -v '#' | sort); do \
 		echo $$x; \
 		fname=$$(echo $$x | tr '/.' '-' | tr A-Z a-z); \
 		dest_dir=$(2)/$$fname; \
@@ -66,14 +66,14 @@ define fetchRepoListR
 		echo "$$x done"; \
 	done;
 	# 符号链接化(按标签分类)
-	for flst_path in `ls $(REPO_LIST_DIR)/$(1).d/*.lst`; do \
+	for flst_path in `find $(REPO_LIST_DIR)/$(1).d -name "*.lst"`; do \
 		topic_name=`basename $$flst_path | cut -d. -f1`; \
 		topic_dir=$(TOPIC_SRC_DIR)/$$topic_name; \
 		[ -d "$$topic_dir" ] || mkdir -p "$$topic_dir"; \
 		lst=`cat $$flst_path | grep -v "#"`; \
 		for x in $$lst; do \
 			dname=$$(echo $$x | tr '/.' '-' | tr A-Z a-z); \
-			[ -h "$$topic_dir/$$dname" ] || ln -fs "../../repo/$$dname" "$$topic_dir/$$dname"; \
+			[ -L "$$topic_dir/$$dname" ] || ln -fs "../../repo/$$dname" "$$topic_dir/$$dname"; \
 		done; \
 		echo "$$topic_dir $$flst_path done"; \
 	done;
