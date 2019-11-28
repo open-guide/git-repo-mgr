@@ -18,7 +18,9 @@ BUDDY_CTL_DIR := .open-helper
 # ###########################
 .PHONY: init fini clean install uninstall sync export
 init:
-	# $(call fetchRepoListR,gitee,$(REPO_SRC_DIR),https://gitee.com/)
+	$(call fetchRepoListR,gitee,$(REPO_SRC_DIR),https://gitee.com/)
+	$(call fetchRepoListR,github,$(REPO_SRC_DIR),https://github.com/)
+	$(call fetchRepoListR,gitlab,$(REPO_SRC_DIR),https://gitlab.com/)
 	$(call initWorkDirR)
 	@echo ALL DONE;
 fini:
